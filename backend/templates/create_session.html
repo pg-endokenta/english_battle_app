@@ -1,0 +1,20 @@
+<form method="post">{% csrf_token %}
+  <label>タイトル：</label>
+  <input type="text" name="title" required><br><br>
+
+  <label>本を選んでください：</label>
+  <select name="book_id" required>
+    {% for book in books %}
+      <option value="{{ book.id }}">{{ book.title }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  <label>問題数：</label>
+  <select name="question_count">
+    <option value="10">10</option>
+    <option value="30" selected>30</option>
+    <option value="50">50</option>
+  </select><br><br>
+
+  <button type="submit">セッション作成</button>
+</form>

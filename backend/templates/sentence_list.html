@@ -1,0 +1,37 @@
+<h2>全問題一覧</h2>
+
+<p><a href="{% url 'home' %}">← ホームに戻る</a></p>
+
+<form method="get">
+  <label>本を選ぶ：</label>
+  <select name="book_id">
+    <option value="">すべて</option>
+    {% for book in books %}
+      <option value="{{ book.id }}" {% if selected_book_id == book.id|stringformat:"s" %}selected{% endif %}>
+        {{ book.title }}
+      </option>
+    {% endfor %}
+  </select>
+  <button type="submit">絞り込む</button>
+</form>
+
+<hr>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>番号</th>
+      <th>日本語</th>
+      <th>英語</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in sentences %}
+    <tr>
+      <td>{{ s.number }}</td>
+      <td>{{ s.japanese }}</td>
+      <td>{{ s.english }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

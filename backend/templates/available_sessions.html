@@ -1,0 +1,12 @@
+<h2>参加可能なセッション</h2>
+<ul>
+  {% for session in sessions %}
+    <li>
+      作成者: {{ session.host.username }} /
+      問題数: {{ session.question_count }} /
+      <a href="{% url 'join_session' session.id %}">参加する</a>
+    </li>
+  {% empty %}
+    <li>参加可能なセッションはありません</li>
+  {% endfor %}
+</ul>

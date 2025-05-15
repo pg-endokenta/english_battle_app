@@ -1,0 +1,9 @@
+<form method="post">{% csrf_token %}
+  {% for q in assignments %}
+    <div>
+      <p>{{ forloop.counter }}. {{ q.sentence.japanese }}</p>
+      <input type="text" name="answer_{{ q.id }}">
+    </div>
+  {% endfor %}
+  <button type="submit">解答提出</button>
+</form>

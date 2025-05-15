@@ -1,0 +1,52 @@
+{% load custom_tags %}
+
+
+<h2>セッション結果 - {{ session.title }}</h2>
+<p>出題元の本: {{ session.book.title }}</p>
+<p>作成者: {{ session.host.username }}</p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>日本語</th>
+      <th>正解</th>
+      {% for user in participants %}
+        <th>{{ user.username }}の回答</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ row.japanese }}</td>
+        <td>{{ row.english }}</td>
+        {% for a in row.answers %}
+          <td style="
+            {% if a.is_correct %}
+              background-color: #d2f4dc;
+            {% else %}
+              background-color: #f8d7da;
+            {% endif %}
+          ">
+            {{ a.text }}
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+
+    <!-- 合計行 -->
+    <tr>
+      <td colspan="3"><strong>正答数</strong></td>
+      {% for user in participants %}
+        <td style="text-align: center;">
+          {{ user_scores|get_item:user.username }}/{{ total_questions }}
+          {% if user.username in top_users %} 👑{% endif %}
+        </td>
+      {% endfor %}
+    </tr>
+  </tbody>
+</table>
+
+<p><a href="{% url 'home' %}">ホームに戻る</a></p>

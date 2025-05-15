@@ -1,0 +1,79 @@
+<h2>ようこそ {{ request.user.username }} さん！</h2>
+
+<form method="post" action="{% url 'logout' %}">
+  {% csrf_token %}
+  <button type="submit">🚪 ログアウト</button>
+</form>
+
+<p>
+  <a href="{% url 'sentence_list' %}">📖 全問題を見る</a>
+</p>
+
+<p>
+  <a href="{{ practice_page_url }}">🧠 練習モード（セッションなし）で学ぶ</a>
+</p>
+
+
+<p><a href="{% url 'create_session' %}">➕ 新しいセッションを作成する</a></p>
+
+<hr>
+
+<h3>🎮 参加可能なセッション（新しい順）</h3>
+<ul>
+  {% for s in available_sessions %}
+    {% with session=s.session %}
+    <li>
+      <strong>[{{ session.title }}]</strong>
+      本: {{ session.book.title }} /
+      作成者: {{ session.host.username }} /
+      問題数: {{ session.question_count }} /
+      回答者: {{ s.answered_user_count }}人 /
+      作成: {{ session.created_at|date:"Y-m-d H:i" }} /
+      <a href="{% url 'join_session' session.id %}">参加</a>
+    </li>
+    {% endwith %}
+  {% empty %}
+    <li>他に参加できるセッションはありません。</li>
+  {% endfor %}
+</ul>
+
+<h3>📝 解答途中のセッション</h3>
+<ul>
+  {% for s in unanswered_sessions %}
+    {% with session=s.session %}
+    <li>
+      <strong>[{{ session.title }}]</strong>
+      本: {{ session.book.title }} /
+      作成者: {{ session.host.username }} /
+      問題数: {{ session.question_count }} /
+      回答者: {{ s.answered_user_count }}人 /
+      作成: {{ session.created_at|date:"Y-m-d H:i" }} /
+      <a href="{% url 'quiz' session.id %}">解答を続ける</a>
+    </li>
+    {% endwith %}
+  {% empty %}
+    <li>解答途中のセッションはありません。</li>
+  {% endfor %}
+</ul>
+
+<h3>✅ 解答済みのセッション</h3>
+<ul>
+  {% for s in answered_sessions %}
+    {% with session=s.session %}
+    <li>
+      <strong>[{{ session.title }}]</strong>
+      本: {{ session.book.title }} /
+      作成者: {{ session.host.username }} /
+      問題数: {{ session.question_count }} /
+      回答者: {{ s.answered_user_count }}人 /
+      作成: {{ session.created_at|date:"Y-m-d H:i" }} /
+      <strong>あなたのスコア: {{ s.correct }}/{{ s.total }}</strong> /
+      <br>
+      🏅 <strong>トップ正答者: {{ s.top_users|join:", " }}</strong>（{{ s.top_score }}問正解） /
+      <a href="{% url 'results' session.id %}">結果を見る</a>
+    </li>
+    {% endwith %}
+  {% empty %}
+    <li>解答済みのセッションはありません。</li>
+  {% endfor %}
+</ul>
