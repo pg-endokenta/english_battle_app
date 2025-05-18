@@ -9,6 +9,8 @@ from books.models import Book
 
 from django.conf import settings
 
+from .utils import get_vite_asset_path
+
 
 @login_required
 def create_session(request):
@@ -192,13 +194,10 @@ def home(request):
                 'answered_user_count': answered_user_count,
             })
 
-    CLIENT_BASE_URL = settings.CLIENT_BASE_URL
-
     return render(request, 'home.html', {
         'available_sessions': available_sessions,
         'unanswered_sessions': unanswered_sessions,
         'answered_sessions': answered_sessions,
-        'practice_page_url': f"{CLIENT_BASE_URL}/translate/",
     })
 
 
@@ -222,47 +221,6 @@ def sentence_list(request):
 
 
 @login_required
-def practice(request):
-    from random import choice
-
-    book_id = request.GET.get("book_id")
-    result = None
-    previous_sentence = None
-
-    # POST 時は前回の問題を取得
-    if request.method == 'POST':
-        sentence_id = request.POST.get('sentence_id')
-        previous_sentence = get_object_or_404(Sentence, id=sentence_id)
-        user_answer = request.POST.get('answer', '').strip()
-        is_correct = user_answer.lower() == previous_sentence.english.lower()
-        result = {
-            'user_answer': user_answer,
-            'correct_answer': previous_sentence.english,
-            'is_correct': is_correct,
-            'japanese': previous_sentence.japanese,
-        }
-        book_id = previous_sentence.book.id
-
-    # 出題対象の本の文だけ抽出
-    if book_id:
-        sentences = Sentence.objects.filter(book__id=book_id)
-    else:
-        sentences = Sentence.objects.all()
-
-    if not sentences.exists():
-        return render(request, 'practice.html', {
-            'sentence': None,
-            'result': result,
-            'book_id': book_id,
-            'books': Book.objects.all(),
-            'error': "指定された本に問題がありません。",
-        })
-
-    current_sentence = choice(sentences)
-
-    return render(request, 'practice.html', {
-        'sentence': current_sentence,
-        'result': result,
-        'book_id': book_id,
-        'books': Book.objects.all(),
-    })
+def react_index(request):
+    js_path = get_vite_asset_path('index.html')
+    return render(request, 'react_index.html', { 'js_path': js_path })

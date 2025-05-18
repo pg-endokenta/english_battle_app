@@ -1,5 +1,6 @@
 from pathlib import Path
 from os import getenv
+import dj_database_url
 
 def get_list_env(key: str, default: str = "") -> list[str]:
     return [x.strip() for x in getenv(key, default).split(",") if x.strip()]
@@ -30,31 +31,24 @@ AUTH_USER_MODEL = 'users.User'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CLIENT_BASE_URL = getenv("CLIENT_BASE_URL")
-
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = get_list_env("CORS_ALLOWED_ORIGINS")
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": getenv("POSTGRES_DB"),
-        "USER": getenv("POSTGRES_USER"),
-        "PASSWORD": getenv("POSTGRES_PASSWORD"),
-        "HOST": getenv("POSTGRES_HOST"),
-        "PORT": getenv("POSTGRES_PORT"),
-    }
+    "default": dj_database_url.config(
+        default=getenv("DATABASE_URL"),
+        conn_max_age=30,          # Cloud Run の再利用を意識
+    )
 }
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getenv("DJANGO_DEBUG") == "True"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic", # for development
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -81,6 +75,7 @@ LOGOUT_REDIRECT_URL = '/auth/login/'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware", # CORS middleware
     "django.middleware.common.CommonMiddleware",
@@ -101,11 +96,21 @@ ROOT_URLCONF = "config.urls"
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-set^j_^#*xjq^%vq6hgrheb*b)y38z*#w=ijufr6$r_v$gzipy"
+SECRET_KEY = getenv("DJANGO_SECRET_KEY")
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATIC_URL = "static/"
 
-
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 TEMPLATES = [
     {
