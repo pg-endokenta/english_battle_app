@@ -35,7 +35,7 @@ cu:
 # ConohaVPSでDBを立てるときのコマンド
 .PHONY: conoha-db
 conoha-db:
-	docker compose -f compose-db.yaml up -d
+	docker compose -f compose.db.yaml up -d
 
 # GCPにDjangoをデプロイするときのコマンド
 .PHONY: generate-env-yaml
