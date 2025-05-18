@@ -6,7 +6,7 @@ def get_list_env(key: str, default: str = "") -> list[str]:
     return [x.strip() for x in getenv(key, default).split(",") if x.strip()]
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = get_list_env("DJANGO_ALLOWED_HOSTS")
 
 
 # Password validation
@@ -30,6 +30,8 @@ AUTH_USER_MODEL = 'users.User'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+CSRF_TRUSTED_ORIGINS = get_list_env("DJANGO_CSRF_TRUSTED_ORIGINS")
 
 
 # Database

@@ -62,6 +62,7 @@ gcp-deploy:
 	--platform managed \
 	--allow-unauthenticated \
 	--max-instances=1 \
+	--project=$(PROJECT_ID) \
 	--env-vars-file=.env.yaml
 
 .PHONY: deploy
