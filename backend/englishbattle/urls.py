@@ -9,5 +9,4 @@ urlpatterns = [
     path('sessions/', views.available_sessions, name='available_sessions'),
     path('home/', views.home, name='home'),
     path('sentences/', views.sentence_list, name='sentence_list'),
-    path('practice/', views.react_index, name='practice'),
 ]

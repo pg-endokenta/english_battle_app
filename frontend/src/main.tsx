@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import PracticePage from './pages/PracticePage.tsx';
 import './index.css'
 import App from './App.tsx'
+import PracticeStats from './pages/PracticeStats.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -11,6 +12,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/practice" element={<PracticePage />} />
+        <Route path="/practice/stats" element={<PracticeStats />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

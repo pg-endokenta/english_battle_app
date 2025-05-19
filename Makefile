@@ -10,6 +10,10 @@ dev:
 down:
 	docker compose down
 
+.PHONY: bash
+bash:
+	docker compose exec backend bash
+
 .PHONY: local-prod
 local-prod:
 	docker compose -f compose.prod.yaml up -d --build
@@ -17,20 +21,6 @@ local-prod:
 .PHONY: local-prod-down
 local-prod-down:
 	docker compose -f compose.prod.yaml down
-
-#  backend
-.PHONY: ba
-ba:
-	docker compose exec backend bash
-
-.PHONY: cb
-cb:
-	docker compose build
-
-.PHONY: cu
-cu:
-	docker compose up
-
 
 # ConohaVPSでDBを立てるときのコマンド
 .PHONY: conoha-db

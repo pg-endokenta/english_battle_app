@@ -11,4 +11,6 @@ urlpatterns = [
     # for api
     path('api/', include('englishbattle.urls_api')),
     path('api/', include('books.urls_api')),
+    # for react
+    path('', include('englishbattle.urls_react')),
 ]
