@@ -14,6 +14,13 @@ interface Book {
   title: string;
 }
 
+function getCookie(name: string) {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith(name + '='));
+  return cookieValue ? decodeURIComponent(cookieValue.split('=')[1]) : '';
+}
+
 function highlightDifferences(input: string, answer: string): [string, string] {
   const inputWords = input.split(' ');
   const answerWords = answer.split(' ');
@@ -82,6 +89,7 @@ function PreviousAnswer({ sentence, result, inputHTML, answerHTML }: {
   );
 }
 
+
 export default function TranslatePractice() {
   const [bookId, setBookId] = useState('');
   const [books, setBooks] = useState<Book[]>([]);
@@ -125,6 +133,28 @@ export default function TranslatePractice() {
     }
   };
 
+  const savePracticeRecord = async (isCorrect: boolean) => {
+    if (!sentence) return;
+    const csrfToken = getCookie('csrftoken');
+    try {
+      await fetch(`${BACKEND_BASE_URL}/api/practice-records/`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({
+          sentence: sentence.id,
+          input_text: userInput,
+          is_correct: isCorrect,
+        }),
+      });
+    } catch (error) {
+      console.error('練習結果の保存エラー:', error);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sentence) return;
@@ -132,12 +162,14 @@ export default function TranslatePractice() {
     setPreviousResult(isCorrect ? 'correct' : 'incorrect');
     setPreviousUserInput(userInput);
     setPreviousSentence(sentence);
+    savePracticeRecord(isCorrect);
     if (isCorrect) {
       fetchNextSentence();
     } else {
       setUserInput('');
       inputRef.current?.focus();
     }
+    
   };
 
   const [highlightedInputHTML, highlightedAnswerHTML] = previousSentence

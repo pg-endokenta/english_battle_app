@@ -44,3 +44,16 @@ class Answer(models.Model):
     answer_text = models.TextField()
     is_correct = models.BooleanField()
     answered_at = models.DateTimeField(auto_now_add=True)
+
+
+
+class PracticeRecord(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
+    input_text = models.TextField()
+    is_correct = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
