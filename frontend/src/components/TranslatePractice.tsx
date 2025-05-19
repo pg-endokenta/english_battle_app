@@ -1,7 +1,7 @@
 // React Frontend (TypeScript) using fetch
 import { useEffect, useState, useRef } from 'react';
 
-const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL || '';
 
 interface Sentence {
   id: string;

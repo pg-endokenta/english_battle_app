@@ -1,4 +1,5 @@
-<form method="post">{% csrf_token %}
+<form method="post" onkeydown="return event.key !== 'Enter';">
+  {% csrf_token %}
   {% for q in assignments %}
     <div>
       <p>{{ forloop.counter }}. {{ q.sentence.japanese }}</p>

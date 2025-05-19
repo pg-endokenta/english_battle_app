@@ -1,6 +1,14 @@
 .env
+.env.yaml
 .venv
 
 __pycache__
 
+
+
+backend/static/frontend
+backend/scripts/data
+
 db_data
+
+staticfiles
