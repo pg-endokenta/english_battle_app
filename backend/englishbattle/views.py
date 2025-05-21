@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import QuizSession, Sentence, QuestionAssignment, Answer
+from .models import QuizSession, Sentence, QuestionAssignment, Answer, AnswerEvaluation
 import random
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
@@ -68,7 +68,7 @@ def quiz(request, session_id):
 
         for assignment in assignments:
             user_answer = request.POST.get(f'answer_{assignment.id}', '').strip()
-            is_correct = user_answer.lower() == assignment.sentence.english.lower()
+            is_correct = user_answer == assignment.sentence.english
             answer_obj = Answer.objects.create(
                 assignment=assignment,
                 user=request.user,
@@ -117,12 +117,12 @@ def results(request, session_id):
             if is_correct:
                 user_scores[user.username] += 1
 
+            gpt_says_correct = None
             if not is_correct:
                 first_evaluation = answer.answerevaluation_set.first()
                 if first_evaluation:
                     gpt_says_correct = first_evaluation.is_correct
-                else:
-                    gpt_says_correct = None
+
             
             row['answers'].append({
                 'username': user.username,
@@ -131,6 +131,20 @@ def results(request, session_id):
                 'gpt_says_correct': gpt_says_correct
             })
         rows.append(row)
+        
+    evaluations = AnswerEvaluation.objects.filter(answer__assignment__session=session)
+    ev = []
+    for evaluation in evaluations:
+        ev.append({
+            'username': evaluation.answer.user.username,
+            'japanese': evaluation.answer.assignment.sentence.japanese,
+            'sentence': evaluation.answer.answer_text,
+            'is_correct': evaluation.is_correct,
+            'explanation': evaluation.explanation,
+        })
+    # usernameでソート
+    ev.sort(key=lambda x: x['username'])
+
 
     max_score = max(user_scores.values()) if user_scores else 0
     top_users = [name for name, score in user_scores.items() if score == max_score]
@@ -144,6 +158,7 @@ def results(request, session_id):
         'max_score': max_score,
         'top_users': top_users,
         'total_questions': session.question_count,
+        'evaluations': ev,
     })
 
 

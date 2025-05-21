@@ -20,7 +20,7 @@ def check_answer_with_gpt(japanese_sentence: str, user_translation: str) -> dict
     user_prompt = f"Japanese:\n{japanese_sentence}\n\nEnglish Translation:\n{user_translation}"
 
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4.1",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}

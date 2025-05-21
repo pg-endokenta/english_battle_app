@@ -3,8 +3,9 @@
   {% for q in assignments %}
     <div>
       <p>{{ forloop.counter }}. {{ q.sentence.japanese }}</p>
-      <input type="text" name="answer_{{ q.id }}">
+      <input type="text" name="answer_{{ q.id }}" style="width: 400px;">
     </div>
   {% endfor %}
   <button type="submit">解答提出</button>
+  <p> AI添削の関係上時間がかかります．タブがクルクルしていれば動いています．</p>
 </form>

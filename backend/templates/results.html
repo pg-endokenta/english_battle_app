@@ -53,4 +53,35 @@
   </tbody>
 </table>
 
+<p>単語帳に沿わない回答をしたものについて</p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>ユーザー</th>
+      <th>日本語</th>
+      <th>回答</th>
+      <th>GPT正誤</th>
+      <th>GPT評価</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ev in evaluations %}
+      <tr>
+        <td>{{ ev.username }}</td>
+        <td>{{ ev.japanese }}</td>
+        <td>{{ ev.sentence }}</td>
+        <td>
+          {% if ev.is_correct %}
+            ✅
+          {% else %}
+            ❌
+          {% endif %}
+        </td>
+        <td>{{ ev.explanation }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 <p><a href="{% url 'home' %}">ホームに戻る</a></p>
