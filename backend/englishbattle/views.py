@@ -118,7 +118,7 @@ def results(request, session_id):
                 user_scores[user.username] += 1
 
             gpt_says_correct = None
-            if not is_correct:
+            if not is_correct and hasattr(answer, 'answerevaluation_set'):
                 first_evaluation = answer.answerevaluation_set.first()
                 if first_evaluation:
                     gpt_says_correct = first_evaluation.is_correct
