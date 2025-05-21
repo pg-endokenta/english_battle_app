@@ -45,6 +45,19 @@ class Answer(models.Model):
     is_correct = models.BooleanField()
     answered_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Answer by {self.user.username}, {self.assignment.sentence.japanese} - {self.answer_text} ({self.answered_at})"
+
+
+class AnswerEvaluation(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    is_correct = models.BooleanField()
+    explanation = models.TextField()
+    checked_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Evaluation of {self.answer.answer_text} by {self.answer.user.username} - {self.is_correct} ({self.checked_at})"
 
 
 class PracticeRecord(models.Model):

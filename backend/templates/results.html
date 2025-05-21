@@ -27,7 +27,11 @@
             {% if a.is_correct %}
               background-color: #d2f4dc;
             {% else %}
-              background-color: #f8d7da;
+              {% if a.gpt_says_correct %}
+                background-color: #b6faaf;
+              {% else %}
+                background-color: #f8d7da;
+              {% endif %}
             {% endif %}
           ">
             {{ a.text }}

@@ -63,16 +63,28 @@ def quiz(request, session_id):
     assignments = all_assignments.exclude(sentence_id__in=answered_sentence_ids)
 
     if request.method == 'POST':
+        from .gpt_utils import check_answer_with_gpt  # 仮: GPT判定用ユーティリティ
+        from .models import AnswerEvaluation
+
         for assignment in assignments:
             user_answer = request.POST.get(f'answer_{assignment.id}', '').strip()
             is_correct = user_answer.lower() == assignment.sentence.english.lower()
-            Answer.objects.create(
+            answer_obj = Answer.objects.create(
                 assignment=assignment,
                 user=request.user,
                 answer_text=user_answer,
                 is_correct=is_correct,
                 answered_at=timezone.now(),
             )
+            if not is_correct and user_answer:
+                # ChatGPTで正誤判定
+                gpt_result = check_answer_with_gpt(assignment.sentence.japanese, user_answer)
+                AnswerEvaluation.objects.create(
+                    answer=answer_obj,
+                    is_correct=gpt_result["is_correct"],
+                    explanation=gpt_result["explanation"],
+                    checked_at=timezone.now(),
+                )
         return redirect('results', session_id=session.id)
 
     return render(request, 'quiz.html', {
@@ -104,15 +116,25 @@ def results(request, session_id):
                 user_scores[user.username] = 0
             if is_correct:
                 user_scores[user.username] += 1
+
+            if not is_correct:
+                first_evaluation = answer.answerevaluation_set.first()
+                if first_evaluation:
+                    gpt_says_correct = first_evaluation.is_correct
+                else:
+                    gpt_says_correct = None
+            
             row['answers'].append({
                 'username': user.username,
                 'text': answer.answer_text if answer else '未回答',
-                'is_correct': is_correct
+                'is_correct': is_correct,
+                'gpt_says_correct': gpt_says_correct
             })
         rows.append(row)
 
     max_score = max(user_scores.values()) if user_scores else 0
     top_users = [name for name, score in user_scores.items() if score == max_score]
+
 
     return render(request, 'results.html', {
         'session': session,
